@@ -1,52 +1,25 @@
 (ns leapfun.core
-  (:import (com.leapmotion.leap Controller
-                                Listener
-                                Frame
-                                Hand Finger Tool Pointable
-                                Vector))
   (:gen-class))
 
-(defn mk-listener []
-  (proxy [Listener] []
-    (onInit [c]
-      (println "onInit" c))
-    (onConnect [c]
-      (println "onConnect" c))
-    (onDisconnect [c]
-      (println "onDisconnect" c))
-    (onExit [c]
-      (println "onExit" c))
-    (onFrame [c]
-      ;;(println "onFrame" c (.frame c))
-      (let [frame (.frame c)
-            hands (.hands frame)
-            pointables (.pointables frame)
-            fingers (.fingers frame)
-            tools (.tools frame)]
-        (if (> (.count hands) 0)
-          (let [left-hand (.leftmost hands)
-                position (.palmPosition left-hand)]
-            ;;(println "r=" (.sphereRadius left-hand)))))
-            (println
-             (format "[%6.1f, %6.1f, %6.1f]"
-                     (.getX position) (.getY position) (.getZ position))))))
-      )))
-
-(defn- get-controller-listener []
-  (let [c (Controller.)
-        l (mk-listener)]
-    (while (not (.isConnected c))
-      (Thread/sleep 100))
-    (.addListener c l)
-    [c l]))
-
 (defn -main
-  "I don't do a whole lot ... yet."
+  "accept a number on the commandline and use that to load and run a sketch."
   [& args]
   ;; work around dangerous default behaviour in Clojure
   (alter-var-root #'*read-eval* (constantly false))
-  (println "Leap Fun!")
-  (let [[c l] (get-controller-listener)]
-    (println "Press Enter to quit")
-    (read-line)
-    (.removeListener c l)))
+  ;; run the appropriate sketch
+  (let [nstr     (if (pos? (count args))
+                   (first args)
+                   "0") ;; default
+        n        (try (read-string nstr)
+                      (catch NumberFormatException e 0))
+        n-ns-str (format "f%03d" n)
+        f-ns     (str "leapfun." n-ns-str)
+        _        (try
+                   (require (symbol f-ns))
+                   (catch java.io.FileNotFoundException e nil))
+        func     (resolve (symbol f-ns "run"))]
+    (if func
+      (do
+        (println f-ns)
+        (func n-ns-str))
+      (println (format "unable to find: %s or %s/run" f-ns f-ns)))))
