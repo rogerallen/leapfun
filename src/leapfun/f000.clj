@@ -18,18 +18,20 @@
       (println "onExit" c))
     (onFrame [c]
       ;;(println "onFrame" c (.frame c))
-      (let [frame (.frame c)
-            hands (.hands frame)
+      (let [frame      (.frame c)
+            hands      (.hands frame)
             pointables (.pointables frame)
-            fingers (.fingers frame)
-            tools (.tools frame)]
+            fingers    (.fingers frame)
+            tools      (.tools frame)]
         (if (> (.count hands) 0)
           (let [left-hand (.leftmost hands)
                 position (.palmPosition left-hand)]
             ;;(println "r=" (.sphereRadius left-hand)))))
             (println
-             (format "[%6.1f, %6.1f, %6.1f]"
-                     (.getX position) (.getY position) (.getZ position))))))
+             (format "[%6.1f, %6.1f, %6.1f] %s %d"
+                     (.getX position) (.getY position) (.getZ position)
+                     (.isValid left-hand)
+                     (.count hands))))))
       )))
 
 (defn- get-controller-listener []
@@ -47,3 +49,11 @@
     (println "Press Enter to quit")
     (read-line)
     (.removeListener c l)))
+
+(defn run1
+  [seconds]
+  (let [[c l] (get-controller-listener)]
+    (Thread/sleep (* seconds 1000)) ;; 10 sec
+    (.removeListener c l)))
+
+;;(run1 10)
