@@ -1,6 +1,6 @@
 ;; polling via timer seems to work okay
 (ns leapfun.f003
-  (:use [seesaw core table])
+  (:use [seesaw core table dev])
   (:import (com.leapmotion.leap
             Controller
             Listener
@@ -16,18 +16,27 @@
   (table
    :id :table
    :model [:columns [{:key :name  :text "Name"}
-                     {:key :value :text "Value"}]
-           :rows [{:name "X" :value "n/a"}
-                  {:name "Y" :value "n/a"}
-                  {:name "Z" :value "n/a"}]]))
+                     {:key :id    :text "ID"}
+                     {:key :valid :text "Valid"}
+                     {:key :x     :text "X"}
+                     {:key :y     :text "Y"}
+                     {:key :z     :text "Z"}
+]
+           :rows [{:name "hand 0" :id "n/a" :valid "n/a" :x "n/a" :y "n/a" :z "n/a"}
+                  {:name "hand 1" :id "n/a" :valid "n/a" :x "n/a" :y "n/a" :z "n/a"}
+                  ]]))
 
 (defn update-table-xyz
-  [[x y z]]
+  [row [x y z]]
   ;;(println "update-table-xyz" x y z)
-  (update-at! @the-table
-              0 {:value (format "%5.3f" x)}
-              1 {:value (format "%5.3f" y)}
-              2 {:value (format "%5.3f" z)}))
+  (update-at! @the-table row {:x (format "%5.3f" x)
+                              :y (format "%5.3f" y)
+                              :z (format "%5.3f" z)}))
+
+(defmacro get-hands-fn
+  [hands f]
+  `(for [i# (range (.count ~hands))]
+     (. (.get ~hands i#) ~f)))
 
 (defn get-hands-xyz
   [hands interaction-box]
@@ -42,10 +51,22 @@
   (let [frame           (.frame ctlr)
         hands           (.hands frame)
         interaction-box (.interactionBox frame)
+        ids             (get-hands-fn hands id)
+        vlds            (get-hands-fn hands isValid)
         xyzs            (get-hands-xyz hands interaction-box)]
-    (if-not (empty? xyzs)
-      (update-table-xyz (first xyzs))
-      (update-table-xyz [Double/NaN Double/NaN Double/NaN]))))
+    (dotimes [i 2]
+      (let [ii (* 1 i)]
+        (try (let [id (nth ids i)
+                   vld (nth vlds i)
+                   xyz (nth xyzs i)]
+               (update-at! @the-table ii {:id (str id)})
+               (update-at! @the-table ii {:valid (str vld)})
+               (update-table-xyz ii xyz))
+             (catch IndexOutOfBoundsException e
+               (do
+                 (update-at! @the-table ii {:id "None"})
+                 (update-at! @the-table ii {:valid "None"})
+                 (update-table-xyz ii [Double/NaN Double/NaN Double/NaN]))))))))
 
 (defn poll-controller
   []
@@ -56,7 +77,7 @@
 ;; ----------------------------------------------------------------------
 (defn make-frame [name on-close]
   (frame :title name
-         :width 200 :height 800
+         :width 400 :height 400
          :content (border-panel
                    :center (scrollable (make-table)))
          :on-close on-close))
@@ -65,7 +86,7 @@
   (let [f  (show! (make-frame name on-close))
         t  (select f [:#table])
         ti (timer (fn [_] (poll-controller))
-                  :delay 10
+                  :delay 50
                   :start? true)
         ]
     (swap! the-table (fn [_] t))
@@ -74,5 +95,6 @@
 
 ;; ----------------------------------------------------------------------
 (comment
+  (debug!)
   (run "title" :on-close :hide)
 )
