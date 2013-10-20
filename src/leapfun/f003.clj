@@ -20,8 +20,7 @@
                      {:key :valid :text "Valid"}
                      {:key :x     :text "X"}
                      {:key :y     :text "Y"}
-                     {:key :z     :text "Z"}
-]
+                     {:key :z     :text "Z"}]
            :rows [{:name "hnd0"     :id "n/a" :valid "n/a" :x "n/a" :y "n/a" :z "n/a"}
                   {:name "hnd0fgr0" :id "n/a" :valid "n/a" :x "n/a" :y "n/a" :z "n/a"}
                   {:name "hnd0fgr1" :id "n/a" :valid "n/a" :x "n/a" :y "n/a" :z "n/a"}
