@@ -1,9 +1,9 @@
 Over in ../leaplib, this is what I did...
 
 ======================================================================
-* leaplib 0.8.1
+* leaplib 1.0.8
 
-cp ~/Downloads/LeapSDK+Examples_hotfix_public_mac_x64_0.8.1+6221/LeapSDK/lib/LeapJava.jar .
+cp ~/Downloads/LeapDeveloperKit/LeapSDK/lib/LeapJava.jar .
 
 cat - > LeapJavaPom.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -11,7 +11,7 @@ cat - > LeapJavaPom.xml << EOF
   <modelVersion>4.0.0</modelVersion>
   <groupId>rogerallen</groupId>
   <artifactId>leaplib</artifactId>
-  <version>0.8.1</version>
+  <version>1.0.8</version>
   <name>leaplib</name>
   <description>leap motion java lib</description>
 </project>
@@ -20,12 +20,12 @@ EOF
 mvn install:install-file -Dfile=LeapJava.jar -DpomFile=LeapJavaPom.xml
 
 ======================================================================
-* leaplib-natives 0.8.1
+* leaplib-natives 1.0.8
 
 mkdir -p native/macosx/x86_64
 
-cp ~/Downloads/LeapSDK+Examples_hotfix_public_mac_x64_0.8.1+6221/LeapSDK/lib/libLeap.dylib native/macosx/x86_64
-cp ~/Downloads/LeapSDK+Examples_hotfix_public_mac_x64_0.8.1+6221/LeapSDK/lib/libLeapJava.dylib native/macosx/x86_64
+cp ~/Downloads/LeapDeveloperKit/LeapSDK/lib/libLeap.dylib native/macosx/x86_64
+cp ~/Downloads/LeapDeveloperKit/LeapSDK/lib/libLeapJava.dylib native/macosx/x86_64
 
 cat - > LeapJavaNativePom.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -33,15 +33,15 @@ cat - > LeapJavaNativePom.xml << EOF
   <modelVersion>4.0.0</modelVersion>
   <groupId>rogerallen</groupId>
   <artifactId>leaplib-natives</artifactId>
-  <version>0.8.1</version>
+  <version>1.0.8</version>
   <name>leaplib-natives</name>
   <description>leap motion java native lib</description>
 </project>
 EOF
 
-jar -cMf leap-java-natives-0.8.1.jar native
+jar -cMf leap-java-natives-1.0.8.jar native
 
-mvn install:install-file -Dfile=leap-java-natives-0.8.1.jar -DpomFile=LeapJavaNativePom.xml
+mvn install:install-file -Dfile=leap-java-natives-1.0.8.jar -DpomFile=LeapJavaNativePom.xml
 
 ======================================================================
 * Test locally
@@ -51,10 +51,10 @@ Use lein -o run
 ======================================================================
 * Uploading
 
-cd /Users/rallen/.m2/repository/rogerallen/leaplib/0.8.1
-scp leaplib-0.8.1.jar leaplib-0.8.1.pom clojars@clojars.org:
-cd /Users/rallen/.m2/repository/rogerallen/leaplib-natives/0.8.1
-scp leaplib-natives-0.8.1.jar leaplib-natives-0.8.1.pom clojars@clojars.org:
+cd /Users/rallen/.m2/repository/rogerallen/leaplib/1.0.8
+scp leaplib-1.0.8.jar leaplib-1.0.8.pom clojars@clojars.org:
+cd /Users/rallen/.m2/repository/rogerallen/leaplib-natives/1.0.8
+scp leaplib-natives-1.0.8.jar leaplib-natives-1.0.8.pom clojars@clojars.org:
 
 ======================================================================
 * Cleaning
